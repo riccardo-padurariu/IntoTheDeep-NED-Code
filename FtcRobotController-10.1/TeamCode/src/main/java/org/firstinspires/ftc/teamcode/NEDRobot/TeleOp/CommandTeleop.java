@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -30,6 +31,7 @@ import org.firstinspires.ftc.teamcode.NEDRobot.Subsystems.Obot;
 import org.firstinspires.ftc.teamcode.NEDRobot.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.photoncore.Neutrino.RevColorSensor.RevColorSensorV3Ex;
 import org.firstinspires.ftc.teamcode.photoncore.PhotonCore;
+import org.w3c.dom.Comment;
 
 import java.util.function.BooleanSupplier;
 
@@ -44,10 +46,6 @@ public class CommandTeleop extends CommandOpMode {
     BooleanSupplier button1;
     double contor = 0;
     double sumLoop;
-    public RevColorSensorV3Ex intakeSensorLeft;
-    public RevColorSensorV3Ex intakeSensorRight;
-
-    private double distance_to_intake = 1.2;
     private double loopTime = 0;
     private SampleMecanumDrive drive;
     double leftSen, rightSen;
@@ -59,34 +57,23 @@ public class CommandTeleop extends CommandOpMode {
     ElapsedTime voltage_timer;
     VoltageSensor voltageSensor;
     double voltage;
+    double transferPos = 340;
+    double clampPos = 170;
 
 
     @Override
     public void initialize() {
-        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        //intakeSensorLeft = hardwareMap.get(RevColorSensorV3Ex.class,"intakeSensorLeft");
-        //intakeSensorLeft.setUpdateRate(RevColorSensorV3Ex.UPDATE_RATE.HIGH_SPEED);
-        //intakeSensorRight = hardwareMap.get(RevColorSensorV3Ex.class,"intakeSensorRight");
-        //intakeSensorRight.setUpdateRate(RevColorSensorV3Ex.UPDATE_RATE.HIGH_SPEED);
         CommandScheduler.getInstance().reset();
         obotV2.init(hardwareMap,telemetry);
         obotV2.read();
         obotV2.periodic();
         obotV2.liftSubsystem.update(LiftSubsystem.LiftState.HOME);
-        //obotV2.intakeSubsystem.update(IntakeSubsystem.ExtendoState.HOME);
-        //obotV2.LeftExtendoMotor.setTargetPosition(-10);
-        //obotV2.LeftExtendoMotor.setPower(1);
-        //obotV2.LeftExtendoMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //obotV2.RightExtendoMotor.setTargetPosition(-10);
-        ///obotV2.RightExtendoMotor.setPower(1);
-        //obotV2.RightExtendoMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         obotV2.intakeSubsystem.update(IntakeSubsystem.ExtendoState.HOME);
         obotV2.intakeSubsystem.update(IntakeSubsystem.IntakeState.INTAKE);
         obotV2.intakeSubsystem.update(IntakeSubsystem.PitchState.INTAKE);
         obotV2.intakeSubsystem.update(IntakeSubsystem.ClawState.OPEN);
-        //obotV2.claw.setPosition(1);
         obotV2.intakeSubsystem.update(IntakeSubsystem.WristState.HOME);
-        obotV2.liftSubsystem.update(LiftSubsystem.BucketState.BASKET);
+        obotV2.liftSubsystem.update(LiftSubsystem.BucketState.TRANSFER);
         obotV2.liftSubsystem.update(LiftSubsystem.TriggerState.OPEN);
         drive = new SampleMecanumDrive(hardwareMap);
         button = () -> gamepad1.start;
@@ -100,70 +87,105 @@ public class CommandTeleop extends CommandOpMode {
                         .whenPressed(
                                 new SequentialCommandGroup(
                                         new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.CLOSE),
-                                        new WaitCommand(1000),
+                                        new WaitCommand(300),
                                         new IntakePosCommand(obotV2, IntakeSubsystem.IntakeState.TRANSFER),
-                                        new WaitCommand(1000),
-                                        new InstantCommand(() -> obotV2.LeftExtendoMotor.setTargetPosition(-100)),
-                                        new InstantCommand(() -> obotV2.LeftExtendoMotor.setPower(1)),
-                                        new InstantCommand(() -> obotV2.LeftExtendoMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION)),
-                                        new InstantCommand(() -> obotV2.RightExtendoMotor.setTargetPosition(-100)),
-                                        new InstantCommand(() -> obotV2.RightExtendoMotor.setPower(1)),
-                                        new InstantCommand(() -> obotV2.RightExtendoMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION)),
-                                        new WaitCommand(1000),
-                                        new WristPosCommand(obotV2, IntakeSubsystem.WristState.TRANSFER),
-                                        new WaitCommand(1000),
+                                        new WaitCommand(300),
+                                        new ExtendoPosCommand(obotV2, IntakeSubsystem.ExtendoState.HOME),
+                                        new WaitCommand(300),
+                                        new WristPosCommand(obotV2, IntakeSubsystem.WristState.HOME),
+                                        new WaitCommand(300),
                                         new PitchPosCommand(obotV2, IntakeSubsystem.PitchState.TRANSFER),
-                                        new WaitCommand(1000),
+                                        new WaitCommand(300),
                                         new BucketPosCommand(obotV2, LiftSubsystem.BucketState.TRANSFER),
-                                        new WaitCommand(1000),
+                                        new WaitCommand(500),
                                         new TriggerPosCommand(obotV2, LiftSubsystem.TriggerState.CLOSE),
-                                        new WaitCommand(1000),
-                                        new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.OPEN)
+                                        new WaitCommand(300),
+                                        new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.OPEN),
+                                        new WaitCommand(300),
+                                        new BucketPosCommand(obotV2, LiftSubsystem.BucketState.BASKET)
                                 )
                         );
         GamepadEx1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(
                         new SequentialCommandGroup(
-                                new ExtendoPosCommand(obotV2, IntakeSubsystem.ExtendoState.EXTEND)
+                                new ExtendoPosCommand(obotV2, IntakeSubsystem.ExtendoState.EXTEND),
+                                new WristPosCommand(obotV2, IntakeSubsystem.WristState.DIAGONAL_RIGHT)
                         )
                 );
         GamepadEx1.getGamepadButton(GamepadKeys.Button.START)
                         .whenPressed(
                                 new SequentialCommandGroup(
                                         new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.CLOSE),
-                                        new WaitCommand(1000),
+                                        new WaitCommand(150),
                                         new PitchPosCommand(obotV2, IntakeSubsystem.PitchState.INTAKE),
-                                        new WaitCommand(1000),
+                                        new WaitCommand(150),
                                         new WristPosCommand(obotV2, IntakeSubsystem.WristState.HOME),
-                                        new WaitCommand(1000),
+                                        new WaitCommand(150),
                                         new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.OPEN),
-                                        new WaitCommand(1000),
-                                        new IntakePosCommand(obotV2, IntakeSubsystem.IntakeState.INTAKE)
+                                        new WaitCommand(150),
+                                        new IntakePosCommand(obotV2, IntakeSubsystem.IntakeState.INTAKE),
+                                        new WaitCommand(150),
+                                        new LiftPosCommand(obotV2, LiftSubsystem.LiftState.HOME),
+                                        new TriggerPosCommand(obotV2, LiftSubsystem.TriggerState.OPEN),
+                                        new BucketPosCommand(obotV2, LiftSubsystem.BucketState.TRANSFER)
                                 )
                         );
 
-        GamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                        .whenPressed(
-                                new SequentialCommandGroup(
-                                        new BucketPosCommand(obotV2, LiftSubsystem.BucketState.BASKET)
-                                )
-                        );
-
-        GamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                        .whenPressed(
-                                new TriggerPosCommand(obotV2, LiftSubsystem.TriggerState.CLOSE)
-                        );
 
         GamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
                 .whenPressed(
                         new TriggerPosCommand(obotV2, LiftSubsystem.TriggerState.OPEN)
                 );
 
-        GamepadEx1.getGamepadButton(GamepadKeys.Button.X)
+        GamepadEx1.getGamepadButton(GamepadKeys.Button.A)
                         .whenPressed(
                                 new LiftPosCommand(obotV2, LiftSubsystem.LiftState.LOW_BASKET)
                         );
+        GamepadEx1.getGamepadButton(GamepadKeys.Button.Y)
+                        .whenPressed(
+                                new LiftPosCommand(obotV2, LiftSubsystem.LiftState.HIGH_BASKET)
+                        );
+        GamepadEx1.getGamepadButton(GamepadKeys.Button.X)
+                        .whenPressed(
+                                //new ParallelCommandGroup(
+                                  //      new InstantCommand(() -> obotV2.rightBucket.setPosition(toggle(obotV2.rightBucket.getPosition()))),
+                                    //    new InstantCommand(() -> obotV2.leftBucket.setPosition(toggle(obotV2.leftBucket.getPosition())))
+                                //)
+                                    new BucketPosCommand(obotV2, LiftSubsystem.BucketState.CLAMP_DEPOSIT)
+                        );
+        GamepadEx1.getGamepadButton(GamepadKeys.Button.B)
+                        .whenPressed(
+                                new BucketPosCommand(obotV2, LiftSubsystem.BucketState.CLAMP)
+                        );
+        GamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                        .whenPressed(
+                                new BucketPosCommand(obotV2, LiftSubsystem.BucketState.CLAMP_TRANSFER)
+                        );
+        GamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                        .whenPressed(
+                                new TriggerPosCommand(obotV2, LiftSubsystem.TriggerState.CLOSE_DEPOSIT)
+                        );
+        GamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
+                        .whenPressed(
+                                new SequentialCommandGroup(
+                                        new BucketPosCommand(obotV2, LiftSubsystem.BucketState.CLAMP),
+                                        new WaitCommand(600),
+                                        new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.CLOSE),
+                                        new WaitCommand(600),
+                                        new ExtendoPosCommand(obotV2, IntakeSubsystem.ExtendoState.HOME),
+                                        new WaitCommand(600),
+                                        new WristPosCommand(obotV2, IntakeSubsystem.WristState.TRANSFER),
+                                        new WaitCommand(600),
+                                        new IntakePosCommand(obotV2, IntakeSubsystem.IntakeState.DEPOSIT),
+                                        new WaitCommand(600),
+                                        new PitchPosCommand(obotV2, IntakeSubsystem.PitchState.DEPOSIT)
+                                )
+                        );
 
+        GamepadEx1.getGamepadButton(GamepadKeys.Button.BACK)
+                        .whenPressed(
+                                new WristPosCommand(obotV2, IntakeSubsystem.WristState.DIAGONAL_LEFT)
+                        );
 
         PhotonCore.enable();
 
@@ -174,14 +196,36 @@ public class CommandTeleop extends CommandOpMode {
         obotV2.clearBulkCache();
         obotV2.read();
 
-        /*if(gamepad1.right_bumper){
-            obotV2.LeftExtendoMotor.setTargetPosition(1050);
-            obotV2.LeftExtendoMotor.setPower(1);
-            obotV2.LeftExtendoMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            obotV2.RightExtendoMotor.setTargetPosition(1050);
-            obotV2.RightExtendoMotor.setPower(1);
-            obotV2.RightExtendoMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }*/
+
+        if(gamepad1.left_trigger > 0){
+            CommandScheduler.getInstance().schedule(
+                    new SequentialCommandGroup(
+                            new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.OPEN),
+                            new WaitCommand(600),
+                            new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.CLOSE),
+                            new WaitCommand(600),
+                            new PitchPosCommand(obotV2, IntakeSubsystem.PitchState.INTAKE),
+                            new WaitCommand(600),
+                            new IntakePosCommand(obotV2, IntakeSubsystem.IntakeState.INTAKE),
+                            new WaitCommand(600),
+                            new WristPosCommand(obotV2, IntakeSubsystem.WristState.HOME),
+                            new WaitCommand(600),
+                            new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.OPEN)
+                    )
+            );
+        }
+
+        double positions[] = {
+                0.569,
+                0.37,
+                0.7
+        };
+
+        if(gamepad1.back){
+
+            obotV2.wrist.setPosition(positions[0]);
+
+        }
 
 
         if (Scoring) {
@@ -199,44 +243,11 @@ public class CommandTeleop extends CommandOpMode {
                         )
                 );
             }
-        if(In_Intake) {
-            Outtaking=false;
-            leftSen=intakeSensorLeft.getDistance(DistanceUnit.CM);
-            rightSen=intakeSensorRight.getDistance(DistanceUnit.CM);
-            if (leftSen<distance_to_intake && !ClosedLeft) {
-                i++;
-            }
-            if(i==4)
-            {
-                i=0;
-                ClosedLeft=true;
-            }
-            if (rightSen<distance_to_intake && !ClosedRight) {
-                j++;
-            }
-            if(j==4)
-            {
-                j=0;
-                ClosedRight=true;
-            }
-            if (ClosedRight && ClosedLeft) {
-                ClosedRight=false;
-                ClosedLeft=false;
-                In_Intake = false;
-                //CommandScheduler.getInstance().schedule(new TransferCommand(obotV2));
-                gamepad1.rumble(1000);
-                isHome = true;
-            }
-        }
-        else
-        {
-            i=0;j=0;ClosedLeft=false;ClosedRight=false;
-        }
-        //gamepad1.rumble(200); -> cod pentru a vibra controller ul
+
 
         super.run();
         obotV2.periodic();
-        telemetry.addData("Pos", obotV2.liftSubsystem.getLiftHeight());
+        /*telemetry.addData("Pos", obotV2.liftSubsystem.getLiftHeight());
         telemetry.addData("In_Intake",In_Intake);
         telemetry.addData("LeftSen",leftSen);
         telemetry.addData("RightSen",rightSen);
@@ -249,7 +260,7 @@ public class CommandTeleop extends CommandOpMode {
         telemetry.addData("EXTENDO TARGET POS",obotV2.Extendo.getTargetPosition());
         telemetry.addData("EXTENDO POWER",obotV2.Extendo.getPower());
         telemetry.addData("pPower",obotV2.Extendo.pPower);
-        telemetry.addData("pTargetPos",obotV2.Extendo.pTargetPosition);
+        telemetry.addData("pTargetPos",obotV2.Extendo.pTargetPosition);*/
 
 
 
@@ -274,6 +285,11 @@ public class CommandTeleop extends CommandOpMode {
 
     public double dead(double x, double k) {
         return Math.abs(x) > k ? x : 0;
+    }
+    public double toggle(double servoPos){
+        if(servoPos*360 == transferPos)
+            return clampPos;
+        return transferPos;
     }
 }
 

@@ -8,7 +8,8 @@ public class IntakeSubsystem extends NEDSubsystem {
 
     public enum IntakeState{
         INTAKE,
-        TRANSFER
+        TRANSFER,
+        DEPOSIT
     }
 
     public enum ExtendoState{
@@ -18,7 +19,8 @@ public class IntakeSubsystem extends NEDSubsystem {
 
     public enum PitchState{
         INTAKE,
-        TRANSFER
+        TRANSFER,
+        DEPOSIT
     }
 
     public enum ClawState{
@@ -41,10 +43,10 @@ public class IntakeSubsystem extends NEDSubsystem {
     private int extendoHeight = 0;
 
 
-    private double WristHomePos = 0.88;
-    private double WristDiagonalPosRight = 0.8;
-    private double WristDiagonalPosLeft = 1;
-    private double WristTransferPos = 0.32;
+    private double WristHomePos = 0.569;
+    private double WristDiagonalPosRight = 0.7;
+    private double WristDiagonalPosLeft = 0.37;
+    private double WristTransferPos = 0;
 
     private double[] ExtendoHeights = {
             -500,
@@ -57,16 +59,21 @@ public class IntakeSubsystem extends NEDSubsystem {
     };
     private double LIFT_MANUAL_FACTOR=10;
     private int HomeExtendoPos = -10;
-    private int ExtendExtendoPos = 1050;
+    private int ExtendExtendoPos = 800;
 
-    private double IntakePos = 99;
-    private double IntakeTransferPos = 140;
+    private double IntakePos = 96;
+    private double IntakeTransferPos = 173;
+    private double IntakeDepositPos = 340;
 
-    private double PitchIntakePos = 0.05;
-    private double PitchTransferPos = 0.92;
+    private double PitchIntakePos = 0.24;
+    private double PitchTransferPos = 0.85;
 
-    private double OpenClawPos =0.8;
-    private double CloseClawPos = 0.5;
+            //0.86
+    private double PitchDepositPos = 0.4;
+
+    private double OpenClawPos =0.48;
+    private double CloseClawPos = 0.16;
+
 
 
 
@@ -124,6 +131,9 @@ public class IntakeSubsystem extends NEDSubsystem {
             case TRANSFER:
                 obot.pitch_intake.setPosition(PitchTransferPos);
                 break;
+            case DEPOSIT:
+                obot.pitch_intake.setPosition(PitchDepositPos);
+                break;
         }
     }
 
@@ -151,6 +161,10 @@ public class IntakeSubsystem extends NEDSubsystem {
             case TRANSFER:
                 obot.rightIntake.setPosition(IntakeTransferPos/360);
                 obot.leftIntake.setPosition(IntakeTransferPos/360);
+                break;
+            case DEPOSIT:
+                obot.rightIntake.setPosition(IntakeDepositPos/360);
+                obot.leftIntake.setPosition(IntakeDepositPos/360);
                 break;
         }
     }

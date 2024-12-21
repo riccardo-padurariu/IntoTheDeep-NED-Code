@@ -8,7 +8,8 @@ public class LiftSubsystem extends NEDSubsystem {
 
     public enum TriggerState{
         CLOSE,
-        OPEN
+        OPEN,
+        CLOSE_DEPOSIT
     }
 
     public enum LiftState{
@@ -20,7 +21,9 @@ public class LiftSubsystem extends NEDSubsystem {
     public enum BucketState{
         CLAMP,
         BASKET,
-        TRANSFER
+        TRANSFER,
+        CLAMP_DEPOSIT,
+        CLAMP_TRANSFER
     }
 
     public enum HangState{
@@ -46,15 +49,18 @@ public class LiftSubsystem extends NEDSubsystem {
     };
     private double LIFT_MANUAL_FACTOR=10;
     private int HomeLiftPos = 0;
-    private int LowBasketLiftPos = 350;
-    private int HighBasketLiftPos= 650;
+    private int LowBasketLiftPos = 450;
+    private int HighBasketLiftPos= 680;
 
-    private double BucketTranferPos = 303;
-    private double BucketBasketPos = 120;
-    private double BucketClampPos = 0;
+    private double BucketTranferPos = 340;//340
+    private double BucketBasketPos = 160    ;
+    private double BucketClampPos = 90;
+    private double BucketClampDepositPos = 270;
+    private double BucketClampTransferPos = 330;
 
-    private double OpenTriggerPos =0.5;
-    private double CloseTriggerPos = 0.67;
+    private double OpenTriggerPos =0.4;
+    private double CloseTriggerPos = 0.13;
+    private double CloseDepositPos = 0.125;
 
     private double HangHomePos = 0;
     private double HangSwitchPos = 0;
@@ -102,6 +108,14 @@ public class LiftSubsystem extends NEDSubsystem {
                 obot.leftBucket.setPosition(BucketTranferPos/360);
                 obot.rightBucket.setPosition(BucketTranferPos/360);
                 break;
+            case CLAMP_DEPOSIT:
+                obot.leftBucket.setPosition(BucketClampDepositPos/360);
+                obot.rightBucket.setPosition(BucketClampDepositPos/360);
+                break;
+            case CLAMP_TRANSFER:
+                obot.leftBucket.setPosition(BucketClampTransferPos/360);
+                obot.rightBucket.setPosition(BucketClampTransferPos/360);
+                break;
         }
     }
 
@@ -141,6 +155,9 @@ public class LiftSubsystem extends NEDSubsystem {
                 break;
             case CLOSE:
                 obot.trigger.setPosition(CloseTriggerPos);
+                break;
+            case CLOSE_DEPOSIT:
+                obot.trigger.setPosition(CloseDepositPos);
         }
     }
 

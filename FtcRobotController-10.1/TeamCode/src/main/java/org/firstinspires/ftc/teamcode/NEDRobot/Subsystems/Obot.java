@@ -153,7 +153,7 @@ public class Obot {
                 .setMotionProfile(0,new ProfileConstraints(10000,10000,10000));
 
         this.Lift = new NEDMotor(LeftLiftMotor,RightLiftMotor,liftEncoder)
-                .setPIDController(new PIDController(0.02, 0.0, 0.0))
+                .setPIDController(new PIDController(0.035, 0.0, 0.00028 ))
                 .setMotionProfile(0, new ProfileConstraints(10000, 10000, 10000));
 
 
