@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.NEDRobot.Subsystems;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 import org.firstinspires.ftc.teamcode.NEDRobot.Hardware.NEDSubsystem;
 import org.firstinspires.ftc.teamcode.NEDRobot.util.MathUtil;
 
@@ -23,7 +25,8 @@ public class LiftSubsystem extends NEDSubsystem {
         BASKET,
         TRANSFER,
         CLAMP_DEPOSIT,
-        CLAMP_TRANSFER
+        CLAMP_TRANSFER,
+        DEPOSIT_AUTO
     }
 
     public enum HangState{
@@ -49,18 +52,18 @@ public class LiftSubsystem extends NEDSubsystem {
     };
     private double LIFT_MANUAL_FACTOR=10;
     private int HomeLiftPos = 0;
-    private int LowBasketLiftPos = 450;
-    private int HighBasketLiftPos= 680;
+    private int LowBasketLiftPos = 440;
+    private int HighBasketLiftPos= 815;
 
-    private double BucketTranferPos = 340;//340
-    private double BucketBasketPos = 160    ;
-    private double BucketClampPos = 90;
-    private double BucketClampDepositPos = 270;
+    private double BucketTranferPos = 303;//340
+    private double BucketBasketPos = 100;
+    private double BucketClampPos = 0;
+    private double BucketClampDepositPos = 265;
     private double BucketClampTransferPos = 330;
 
-    private double OpenTriggerPos =0.4;
-    private double CloseTriggerPos = 0.13;
-    private double CloseDepositPos = 0.125;
+    private double OpenTriggerPos =1;
+    private double CloseTriggerPos = 0.7;
+    private double CloseDepositPos = 0.81;
 
     private double HangHomePos = 0;
     private double HangSwitchPos = 0;

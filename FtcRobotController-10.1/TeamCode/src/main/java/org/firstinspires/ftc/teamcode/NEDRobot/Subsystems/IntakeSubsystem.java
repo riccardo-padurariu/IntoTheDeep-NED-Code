@@ -9,7 +9,8 @@ public class IntakeSubsystem extends NEDSubsystem {
     public enum IntakeState{
         INTAKE,
         TRANSFER,
-        DEPOSIT
+        DEPOSIT,
+        AUTO
     }
 
     public enum ExtendoState{
@@ -41,11 +42,12 @@ public class IntakeSubsystem extends NEDSubsystem {
     private PitchState pitchState;
     private ExtendoState extendoState;
     private int extendoHeight = 0;
+    private int wristPos = 0;
 
 
-    private double WristHomePos = 0.569;
-    private double WristDiagonalPosRight = 0.7;
-    private double WristDiagonalPosLeft = 0.37;
+    private double WristHomePos = 0.7;
+    private double WristDiagonalPosRight = 0.9;
+    private double WristDiagonalPosLeft = 0.55;
     private double WristTransferPos = 0;
 
     private double[] ExtendoHeights = {
@@ -57,22 +59,30 @@ public class IntakeSubsystem extends NEDSubsystem {
             -3000,
             -3500
     };
+
+    private double[] WristPos = {
+            0.7,
+            0.8,
+            0.55
+    };
+
     private double LIFT_MANUAL_FACTOR=10;
     private int HomeExtendoPos = -10;
-    private int ExtendExtendoPos = 800;
+    private int ExtendExtendoPos = 880;
 
-    private double IntakePos = 96;
-    private double IntakeTransferPos = 173;
-    private double IntakeDepositPos = 340;
+    private double IntakePos = 126;
+    private double IntakeTransferPos = 135;
+    private double IntakeDepositPos = 272;
+    private double IntakeAutoPos = 113;
 
-    private double PitchIntakePos = 0.24;
-    private double PitchTransferPos = 0.85;
+    private double PitchIntakePos = 0;
+    private double PitchTransferPos = 0.68;
 
             //0.86
-    private double PitchDepositPos = 0.4;
+    private double PitchDepositPos = 0.7;
 
-    private double OpenClawPos =0.48;
-    private double CloseClawPos = 0.16;
+    private double OpenClawPos =0.2;
+    private double CloseClawPos = 0.85;
 
 
 
@@ -166,6 +176,10 @@ public class IntakeSubsystem extends NEDSubsystem {
                 obot.rightIntake.setPosition(IntakeDepositPos/360);
                 obot.leftIntake.setPosition(IntakeDepositPos/360);
                 break;
+            case AUTO:
+                obot.rightIntake.setPosition(IntakeAutoPos/360);
+                obot.leftIntake.setPosition(IntakeAutoPos/360);
+                break;
         }
     }
 
@@ -181,18 +195,37 @@ public class IntakeSubsystem extends NEDSubsystem {
         }
     }
 
+    //EXTENDO
+
     public int getExtendoHeightIndex() {
         return extendoHeight;
     }
-    public double getLiftHeight() {
+    public double getExtendoHeight() {
         return ExtendoHeights[getExtendoHeightIndex()];
     }
-
-
     public void incrementExtendoHeight(int amount) {
         this.extendoHeight = (int) MathUtil.clamp(getExtendoHeightIndex() + amount, 0, 15);
     }
     public void setExtendoHeight(int amount) {
         this.extendoHeight = (int) MathUtil.clamp(amount, 0, 15);
     }
+
+    //WRIST
+
+    public int getWristPosIndex() {
+        return wristPos;
+    }
+    public double getWristPos() {
+        return WristPos[getWristPosIndex()];
+    }
+    public void incrementWristPos(int amount) {
+        if(getWristPosIndex() + amount > 2)
+            this.wristPos = 0;
+        else
+            this.wristPos = (int) MathUtil.clamp(getWristPosIndex() + amount, 0, 2);
+    }
+    public void setWristPos(int amount) {
+        this.wristPos = (int) MathUtil.clamp(amount, 0, 2);
+    }
+
 }

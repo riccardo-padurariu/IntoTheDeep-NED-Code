@@ -149,11 +149,11 @@ public class Obot {
         voltageTimer = new ElapsedTime();
 
         this.Extendo = new NEDMotor(LeftExtendoMotor,RightExtendoMotor,extendoEncoder)
-                .setPIDController(new PIDController(0.02,0.0,0.0002))
+                .setPIDController(new PIDController(0.02,0.0,0.0005))
                 .setMotionProfile(0,new ProfileConstraints(10000,10000,10000));
 
         this.Lift = new NEDMotor(LeftLiftMotor,RightLiftMotor,liftEncoder)
-                .setPIDController(new PIDController(0.035, 0.0, 0.00028 ))
+                .setPIDController(new PIDController(0.07, 0.0, 0.00035))
                 .setMotionProfile(0, new ProfileConstraints(10000, 10000, 10000));
 
 

@@ -47,10 +47,10 @@ import java.util.List;
 public class SampleMecanumDrive extends MecanumDrive {
 
     public static double speed = 0.3;
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 1);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(7, 0, 0.5);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(11, 0, 1);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(11, 0, 0.5);
 
-    public static double LATERAL_MULTIPLIER = 0.998;
+    public static double LATERAL_MULTIPLIER = 1.0309;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -92,8 +92,8 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         // TODO: adjust the names of the following hardware devices to match your configuration
         imu = hardwareMap.get(IMU.class, "imu"); //imu
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT; //down
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP; //back
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.LEFT; //down
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD; //back
 
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         // Now initialize the IMU with this mounting orientation
