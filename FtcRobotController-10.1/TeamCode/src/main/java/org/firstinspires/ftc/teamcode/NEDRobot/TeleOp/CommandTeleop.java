@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.NEDRobot.TeleOp;
 
 
-import com.acmerobotics.dashboard.config.Config;
+    import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -101,7 +101,16 @@ public class CommandTeleop extends CommandOpMode {
                                         new WaitCommand(300),
                                         new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.OPEN),
                                         new WaitCommand(200),
-                                        new BucketPosCommand(obotV2, LiftSubsystem.BucketState.BASKET)
+                                        new ParallelCommandGroup(
+                                                new BucketPosCommand(obotV2, LiftSubsystem.BucketState.BASKET),
+                                                new SequentialCommandGroup(
+                                                        new PitchPosCommand(obotV2, IntakeSubsystem.PitchState.INTAKE),
+                                                        new WaitCommand(125),
+                                                        new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.OPEN),
+                                                        new WaitCommand(125),
+                                                        new IntakePosCommand(obotV2, IntakeSubsystem.IntakeState.INTAKE)
+                                                )
+                                        )
                                 )
                         );
         GamepadEx1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
@@ -113,13 +122,6 @@ public class CommandTeleop extends CommandOpMode {
         GamepadEx1.getGamepadButton(GamepadKeys.Button.START)
                         .whenPressed(
                                 new ParallelCommandGroup(
-                                        new SequentialCommandGroup(
-                                                new PitchPosCommand(obotV2, IntakeSubsystem.PitchState.INTAKE),
-                                                new WaitCommand(125),
-                                                new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.OPEN),
-                                                new WaitCommand(125),
-                                                new IntakePosCommand(obotV2, IntakeSubsystem.IntakeState.INTAKE)
-                                        ),
                                         new LiftPosCommand(obotV2, LiftSubsystem.LiftState.HOME),
                                         new TriggerPosCommand(obotV2, LiftSubsystem.TriggerState.OPEN),
                                         new BucketPosCommand(obotV2, LiftSubsystem.BucketState.TRANSFER)
@@ -228,32 +230,35 @@ public class CommandTeleop extends CommandOpMode {
                                 -GamepadEx1.getRightX() * 0.3
                         )
                 );
-            } else {
+        } else {
                 drive.setWeightedDrivePower(
                         new Pose2d(dead(scale(GamepadEx1.getLeftY(), 0.6), 0) * (gamepad1.right_trigger > 0.5 ? 0.353 : 1),
                                 dead(scale(-GamepadEx1.getLeftX(), 0.6), 0) * (gamepad1.right_trigger > 0.5 ? 0.4 : 1),
                                 -GamepadEx1.getRightX() * (gamepad1.right_trigger > 0.5 ? 0.3 : 1)
                         )
                 );
-            }
+        }
 
 
         super.run();
         obotV2.periodic();
-        /*telemetry.addData("Pos", obotV2.liftSubsystem.getExtendoHeight());
-        telemetry.addData("In_Intake",In_Intake);
-        telemetry.addData("LeftSen",leftSen);
-        telemetry.addData("RightSen",rightSen);
-        telemetry.addData("isHome",isHome);
-        telemetry.addData("i",i);
-        telemetry.addData("j",j);
-        telemetry.addData("voltage",voltage);
 
-        telemetry.addData("EXTENDO POS", obotV2.Extendo.getPosition());
-        telemetry.addData("EXTENDO TARGET POS",obotV2.Extendo.getTargetPosition());
-        telemetry.addData("EXTENDO POWER",obotV2.Extendo.getPower());
-        telemetry.addData("pPower",obotV2.Extendo.pPower);
-        telemetry.addData("pTargetPos",obotV2.Extendo.pTargetPosition);*/
+        /*
+            telemetry.addData("Pos", obotV2.liftSubsystem.getExtendoHeight());
+            telemetry.addData("In_Intake",In_Intake);
+            telemetry.addData("LeftSen",leftSen);
+            telemetry.addData("RightSen",rightSen);
+            telemetry.addData("isHome",isHome);
+            telemetry.addData("i",i);
+            telemetry.addData("j",j);
+            telemetry.addData("voltage",voltage);
+
+            telemetry.addData("EXTENDO POS", obotV2.Extendo.getPosition());
+            telemetry.addData("EXTENDO TARGET POS",obotV2.Extendo.getTargetPosition());
+            telemetry.addData("EXTENDO POWER",obotV2.Extendo.getPower());
+            telemetry.addData("pPower",obotV2.Extendo.pPower);
+            telemetry.addData("pTargetPos",obotV2.Extendo.pTargetPosition);
+        */
 
 
         telemetry.addData("EXTENDO POS", obotV2.Lift.getPosition());

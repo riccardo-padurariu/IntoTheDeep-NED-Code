@@ -11,7 +11,7 @@ public class LiftSubsystem extends NEDSubsystem {
     public enum TriggerState{
         CLOSE,
         OPEN,
-        CLOSE_DEPOSIT
+        CLOSE_DEPOSIT,
     }
 
     public enum LiftState{
@@ -52,18 +52,18 @@ public class LiftSubsystem extends NEDSubsystem {
     };
     private double LIFT_MANUAL_FACTOR=10;
     private int HomeLiftPos = 0;
-    private int LowBasketLiftPos = 440;
-    private int HighBasketLiftPos= 815;
+    private int LowBasketLiftPos = 1400;
+    private int HighBasketLiftPos= 2900;
 
-    private double BucketTranferPos = 303;//340
-    private double BucketBasketPos = 100;
+    private double BucketTranferPos = 265;//340
+    private double BucketBasketPos = 56;
     private double BucketClampPos = 0;
     private double BucketClampDepositPos = 265;
     private double BucketClampTransferPos = 330;
 
-    private double OpenTriggerPos =1;
-    private double CloseTriggerPos = 0.7;
-    private double CloseDepositPos = 0.81;
+    private double OpenTriggerPos =0.5;
+    private double CloseTriggerPos = 0.87;
+    private double CloseDepositPos = 0.8;
 
     private double HangHomePos = 0;
     private double HangSwitchPos = 0;

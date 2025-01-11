@@ -60,7 +60,7 @@ public class BlueBasketBeleaua extends LinearOpMode {
     public double realtarget;
     private double pTargetPosition = 0.0;
     private double pPower =0.0;
-    public static double p=0.006,i=0.000,d=0.0000;
+    public static double p=0.0027,i=0.000,d=0.0000;
     public PIDController controller;
     private ElapsedTime timer;
     private AsymmetricMotionProfile profile;
@@ -94,7 +94,7 @@ public class BlueBasketBeleaua extends LinearOpMode {
         obot.init(hardwareMap,telemetry);
         obot.read();
         obot.Extendo.setPID(p,i,0.000);
-        obot.Lift.setPID(0.009,i,0.000);
+        obot.Lift.setPID(0.002,i,0.000);
         // controller = new PIDController(p,i,d);
         //controller.setPID(p,i,d);
         //profile = new AsymmetricMotionProfile(0,0,constraints);
@@ -127,45 +127,45 @@ public class BlueBasketBeleaua extends LinearOpMode {
         double imuAngle = 0.0;
 
         depositPreload = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(25,-4,Math.toRadians(45)),
-                        getVelocityConstraint(65,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
-                        getAccelerationConstraint(65))
+                .lineToLinearHeading(new Pose2d(35,-2,Math.toRadians(45)),
+                        getVelocityConstraint(85,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
+                        getAccelerationConstraint(85))
                 .build();
 
         pick1 = drive.trajectorySequenceBuilder(depositPreload.end())
-                .lineToLinearHeading(new Pose2d(18,-11.5,Math.toRadians(90)),
-                        getVelocityConstraint(45,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
-                        getAccelerationConstraint(45))
+                .lineToLinearHeading(new Pose2d(29,-4,Math.toRadians(90)),
+                        getVelocityConstraint(20,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
+                        getAccelerationConstraint(20))
                 .build();
 
         deposit1 = drive.trajectorySequenceBuilder(pick1.end())
-                .lineToLinearHeading(new Pose2d(25,-5,Math.toRadians(45)),
-                        getVelocityConstraint(35,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
-                        getAccelerationConstraint(35))
+                .lineToLinearHeading(new Pose2d(34,-1,Math.toRadians(45)),
+                        getVelocityConstraint(60,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
+                        getAccelerationConstraint(60))
                 .build();
 
         pick2 = drive.trajectorySequenceBuilder(deposit1.end())
-                .lineToLinearHeading(new Pose2d(28.5,-11.5,Math.toRadians(90)),
-                        getVelocityConstraint(35,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
-                        getAccelerationConstraint(35))
+                .lineToLinearHeading(new Pose2d(40,-2,Math.toRadians(90)),
+                        getVelocityConstraint(20,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
+                        getAccelerationConstraint(20))
                 .build();
 
         deposit2 = drive.trajectorySequenceBuilder(pick2.end())
-                .lineToLinearHeading(new Pose2d(25,-3,Math.toRadians(45)),
-                        getVelocityConstraint(35,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
-                        getAccelerationConstraint(35))
+                .lineToLinearHeading(new Pose2d(32,-1,Math.toRadians(45)),
+                        getVelocityConstraint(60,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
+                        getAccelerationConstraint(60))
                 .build();
 
         pick3 = drive.trajectorySequenceBuilder(deposit2.end())
-                .lineToLinearHeading(new Pose2d(14,-36.5,Math.toRadians(180)),
-                        getVelocityConstraint(45,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
-                        getAccelerationConstraint(45))
+                .lineToLinearHeading(new Pose2d(15,-14,Math.toRadians(180)),
+                        getVelocityConstraint(30,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
+                        getAccelerationConstraint(30))
                 .build();
 
         deposit3 = drive.trajectorySequenceBuilder(pick3.end())
-                .lineToLinearHeading(new Pose2d(26.5,-6,Math.toRadians(45)),
-                        getVelocityConstraint(45,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
-                        getAccelerationConstraint(45))
+                .lineToLinearHeading(new Pose2d(36,-5,Math.toRadians(45)),
+                        getVelocityConstraint(60,DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH),
+                        getAccelerationConstraint(60))
                 .build();
 
         double lastLoopTime = 0;
@@ -223,53 +223,60 @@ public class BlueBasketBeleaua extends LinearOpMode {
                         new ParallelCommandGroup(
                                 new FollowTrajectoryCommand(drive,depositPreload),
                                 new SequentialCommandGroup(
-                                        new LiftPosCommand(obot, LiftSubsystem.LiftState.HIGH_BASKET),
+                                        new WaitCommand(900),
                                         new BucketPosCommand(obot, LiftSubsystem.BucketState.BASKET),
-                                        new WaitCommand(1800),
+                                        new WaitCommand(1700),
                                         new TriggerPosCommand(obot, LiftSubsystem.TriggerState.OPEN)
-                                )
-                        ),
-                        ///////////////////////PICK1//////////////////////////
-                        new ParallelCommandGroup(
-                                new FollowTrajectoryCommand(drive,pick1),
+                                ),
                                 new SequentialCommandGroup(
-                                        new WaitCommand(300),
+                                        new LiftPosCommand(obot, LiftSubsystem.LiftState.HIGH_BASKET),
+                                        //new TriggerPosCommand(obot, LiftSubsystem.TriggerState.OPEN),
+                                        new InstantCommand(() -> obot.Extendo.setMotionProfileTargetPosition(550))
+                                ),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(2800),
                                         new BucketPosCommand(obot, LiftSubsystem.BucketState.TRANSFER),
-                                        new WaitCommand(200),
-                                        new LiftPosCommand(obot, LiftSubsystem.LiftState.HOME),
-                                        new WaitCommand(700),
-                                        new InstantCommand(() -> obot.Extendo.setMotionProfileTargetPosition(800))
+                                        new LiftPosCommand(obot, LiftSubsystem.LiftState.HOME)
+                                        //new WaitCommand(300),
+                                        //new InstantCommand(() -> obot.Extendo.setMotionProfileTargetPosition(700))
                                 )
                         ),
+                        /*new ParallelCommandGroup(
+                                new BucketPosCommand(obot, LiftSubsystem.BucketState.TRANSFER),
+                                new LiftPosCommand(obot, LiftSubsystem.LiftState.HOME)
+                        )*/
+                        new FollowTrajectoryCommand(drive,pick1),
+                        ///////////////////////PICK1//////////////////////////
                         //new WaitCommand(600),
                         //new InstantCommand(() -> obot.Extendo.setMotionProfileTargetPosition(800)),
                         //new WaitCommand(600),
-                        new WaitCommand(800),
+                        //new WaitCommand(100),
                         new ClawPosCommand(obot, IntakeSubsystem.ClawState.CLOSE),
-                        new WaitCommand(600),
+                        new WaitCommand(200),
                         //new ExtendoPosCommand(obot, IntakeSubsystem.ExtendoState.HOME),
                         /////////////////////DEPOSIT1////////////////////////////
                         new ParallelCommandGroup(
                                 new FollowTrajectoryCommand(drive,deposit1),
                                 new SequentialCommandGroup(
-                                        new ExtendoPosCommand(obot, IntakeSubsystem.ExtendoState.HOME),
-                                        new WristPosCommand(obot, IntakeSubsystem.WristState.HOME),
-                                        new WaitCommand(200),
-                                        new IntakePosCommand(obot, IntakeSubsystem.IntakeState.TRANSFER),
-                                        new WaitCommand(200),
+                                        new ParallelCommandGroup(
+                                                new ExtendoPosCommand(obot, IntakeSubsystem.ExtendoState.HOME),
+                                                new WristPosCommand(obot, IntakeSubsystem.WristState.HOME),
+                                                new IntakePosCommand(obot, IntakeSubsystem.IntakeState.TRANSFER)
+                                        ),
+                                        new WaitCommand(150),
                                         new PitchPosCommand(obot, IntakeSubsystem.PitchState.TRANSFER),
                                         new WaitCommand(600),
                                         new TriggerPosCommand(obot, LiftSubsystem.TriggerState.CLOSE),
-                                        new WaitCommand(300),
-                                        new ClawPosCommand(obot, IntakeSubsystem.ClawState.OPEN),
-                                        new WaitCommand(100)
+                                        new WaitCommand(100),
+                                        new ClawPosCommand(obot, IntakeSubsystem.ClawState.OPEN)
                                 )
                         ),
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
                                         new LiftPosCommand(obot, LiftSubsystem.LiftState.HIGH_BASKET),
-                                        new WaitCommand(300),
-                                        new BucketPosCommand(obot, LiftSubsystem.BucketState.BASKET)
+                                        new WaitCommand(1000),
+                                        new BucketPosCommand(obot, LiftSubsystem.BucketState.BASKET),
+                                        new InstantCommand(() -> obot.Extendo.setMotionProfileTargetPosition(615))
                                 ),
                                 new SequentialCommandGroup(
                                         new PitchPosCommand(obot, IntakeSubsystem.PitchState.INTAKE),
@@ -281,22 +288,18 @@ public class BlueBasketBeleaua extends LinearOpMode {
                         ),
                         new WaitCommand(800),
                         new TriggerPosCommand(obot, LiftSubsystem.TriggerState.OPEN),
-                        new WaitCommand(500),
+                        new WaitCommand(600),
                         //////////////////////PICK2///////////////////////////
                         new ParallelCommandGroup(
                                 new FollowTrajectoryCommand(drive,pick2),
                                 new SequentialCommandGroup(
-                                        new WaitCommand(300),
                                         new BucketPosCommand(obot, LiftSubsystem.BucketState.TRANSFER),
-                                        new WaitCommand(200),
-                                        new LiftPosCommand(obot, LiftSubsystem.LiftState.HOME),
-                                        new WaitCommand(600),
-                                        new InstantCommand(() -> obot.Extendo.setMotionProfileTargetPosition(800))
+                                        new LiftPosCommand(obot, LiftSubsystem.LiftState.HOME)
                                 )
                         ),
                         //new WaitCommand(600),
                         //new InstantCommand(() -> obot.Extendo.setMotionProfileTargetPosition(800)),
-                        new WaitCommand(1300),
+                        new WaitCommand(400),
                         new ClawPosCommand(obot, IntakeSubsystem.ClawState.CLOSE),
                         new WaitCommand(600),
                         //new ExtendoPosCommand(obot, IntakeSubsystem.ExtendoState.HOME),
@@ -304,23 +307,24 @@ public class BlueBasketBeleaua extends LinearOpMode {
                         new ParallelCommandGroup(
                                 new FollowTrajectoryCommand(drive,deposit2),
                                 new SequentialCommandGroup(
-                                        new ExtendoPosCommand(obot, IntakeSubsystem.ExtendoState.HOME),
-                                        new WristPosCommand(obot, IntakeSubsystem.WristState.HOME),
-                                        new WaitCommand(200),
-                                        new IntakePosCommand(obot, IntakeSubsystem.IntakeState.TRANSFER),
+                                        new ParallelCommandGroup(
+                                                new ExtendoPosCommand(obot, IntakeSubsystem.ExtendoState.HOME),
+                                                new WristPosCommand(obot, IntakeSubsystem.WristState.HOME),
+                                                new IntakePosCommand(obot, IntakeSubsystem.IntakeState.TRANSFER)
+                                        ),
                                         new WaitCommand(200),
                                         new PitchPosCommand(obot, IntakeSubsystem.PitchState.TRANSFER),
-                                        new WaitCommand(400),
+                                        new WaitCommand(500),
                                         new TriggerPosCommand(obot, LiftSubsystem.TriggerState.CLOSE),
                                         new WaitCommand(100),
                                         new ClawPosCommand(obot, IntakeSubsystem.ClawState.OPEN),
-                                        new WaitCommand(200)
+                                        new WaitCommand(100)
                                 )
                         ),
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
                                         new LiftPosCommand(obot, LiftSubsystem.LiftState.HIGH_BASKET),
-                                        new WaitCommand(300),
+                                        new WaitCommand(1000),
                                         new BucketPosCommand(obot, LiftSubsystem.BucketState.BASKET)
                                 ),
                                 new SequentialCommandGroup(
@@ -331,37 +335,43 @@ public class BlueBasketBeleaua extends LinearOpMode {
                                         new IntakePosCommand(obot, IntakeSubsystem.IntakeState.INTAKE)
                                 )
                         ),
-                        new WaitCommand(800),
+                        new WaitCommand(700),
                         new TriggerPosCommand(obot, LiftSubsystem.TriggerState.OPEN),
-                        new WaitCommand(600),
+                        new WaitCommand(700),
                         ///////////////////PICK3//////////////////////
                         new ParallelCommandGroup(
+                                new SequentialCommandGroup(
+                                        new WaitCommand(500),
+                                        new InstantCommand(() -> obot.Extendo.setMotionProfileTargetPosition(800))
+                                ),
                                 new FollowTrajectoryCommand(drive,pick3),
                                 new SequentialCommandGroup(
-                                        new WaitCommand(300),
                                         new BucketPosCommand(obot, LiftSubsystem.BucketState.TRANSFER),
                                         new WaitCommand(200),
                                         new LiftPosCommand(obot, LiftSubsystem.LiftState.HOME),
-                                        new WaitCommand(1800),
-                                        new InstantCommand(() -> obot.Extendo.setMotionProfileTargetPosition(850)),
                                         new WaitCommand(300),
-                                        new WristPosCommand(obot, IntakeSubsystem.WristState.DIAGONAL_RIGHT)
+                                        new WristPosCommand(obot, IntakeSubsystem.WristState.DIAGONAL_RIGHT),
+                                        new WaitCommand(300),
+                                        new PitchPosCommand(obot, IntakeSubsystem.PitchState.INTAKE),
+                                        new WaitCommand(200),
+                                        new IntakePosCommand(obot, IntakeSubsystem.IntakeState.INTAKE)
                                 )
                         ),
-                        new WaitCommand(1000),
+                        new WaitCommand(100),
                         new ClawPosCommand(obot, IntakeSubsystem.ClawState.CLOSE),
-                        new WaitCommand(700),
+                        new WaitCommand(500),
                         //////////////////DEPOSIT3//////////////////
                         new ParallelCommandGroup(
                                 new FollowTrajectoryCommand(drive,deposit3),
                                 new SequentialCommandGroup(
-                                        new ExtendoPosCommand(obot, IntakeSubsystem.ExtendoState.HOME),
-                                        new WristPosCommand(obot, IntakeSubsystem.WristState.HOME),
-                                        new WaitCommand(200),
-                                        new IntakePosCommand(obot, IntakeSubsystem.IntakeState.TRANSFER),
+                                        new ParallelCommandGroup(
+                                                new ExtendoPosCommand(obot, IntakeSubsystem.ExtendoState.HOME),
+                                                new WristPosCommand(obot, IntakeSubsystem.WristState.HOME),
+                                                new IntakePosCommand(obot, IntakeSubsystem.IntakeState.TRANSFER)
+                                        ),
                                         new WaitCommand(200),
                                         new PitchPosCommand(obot, IntakeSubsystem.PitchState.TRANSFER),
-                                        new WaitCommand(600),
+                                        new WaitCommand(500),
                                         new TriggerPosCommand(obot, LiftSubsystem.TriggerState.CLOSE),
                                         new WaitCommand(100),
                                         new ClawPosCommand(obot, IntakeSubsystem.ClawState.OPEN),
@@ -372,7 +382,7 @@ public class BlueBasketBeleaua extends LinearOpMode {
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
                                         new LiftPosCommand(obot, LiftSubsystem.LiftState.HIGH_BASKET),
-                                        new WaitCommand(300),
+                                        new WaitCommand(1000),
                                         new BucketPosCommand(obot, LiftSubsystem.BucketState.BASKET)
                                 ),
                                 new SequentialCommandGroup(
@@ -383,9 +393,9 @@ public class BlueBasketBeleaua extends LinearOpMode {
                                         new IntakePosCommand(obot, IntakeSubsystem.IntakeState.INTAKE)
                                 )
                         ),
-                        new WaitCommand(800),
+                        new WaitCommand(700),
                         new TriggerPosCommand(obot, LiftSubsystem.TriggerState.OPEN),
-                        new WaitCommand(600),
+                        new WaitCommand(500),
                         new ParallelCommandGroup(
                                 new WaitCommand(1200),
                                 new BucketPosCommand(obot, LiftSubsystem.BucketState.TRANSFER),
@@ -409,8 +419,8 @@ public class BlueBasketBeleaua extends LinearOpMode {
 
             obot.read();
             obot.periodic();
-
             obot.write();
+
             if(imuTime.seconds() > 1.0 / IMU_FREQ) {
                 imuTime.reset();
                 imuAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
