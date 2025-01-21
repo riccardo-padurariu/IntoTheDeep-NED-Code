@@ -28,7 +28,8 @@ public class IntakeSubsystem extends NEDSubsystem {
 
     public enum ClawState{
         OPEN,
-        CLOSE
+        CLOSE,
+        SOFT_CLOSE
     }
 
     public enum WristState{
@@ -70,21 +71,22 @@ public class IntakeSubsystem extends NEDSubsystem {
 
     private double LIFT_MANUAL_FACTOR=10;
     private int HomeExtendoPos = -10;
-    private int ExtendExtendoPos = 880;
+    private int ExtendExtendoPos = 850;
 
-    private double IntakePos = 83;
-    private double IntakeTransferPos = 110;
-    private double IntakeDepositPos = 272;
+    private double IntakePos = 55;
+    private double IntakeTransferPos = 85;
+    private double IntakeDepositPos = 260;
     private double IntakeAutoPos = 113;
     private double IntakeFinalPickPos = 106;
 
-    private double PitchIntakePos = 0.1;
-    private double PitchTransferPos = 0.62;
-    private double PitchDepositPos = 0.7;
+    private double PitchIntakePos = 0.22;
+    private double PitchTransferPos = 0.79;
+    private double PitchDepositPos = 0.9;
     private double PitchFinalPickPos = 0.5;
 
     private double OpenClawPos =0.8;
-    private double CloseClawPos = 0.45;
+    private double CloseClawPos = 0.47;
+    private double SoftCloseClawPos = 0.48;
 
 
 
@@ -199,6 +201,9 @@ public class IntakeSubsystem extends NEDSubsystem {
                 break;
             case CLOSE:
                 obot.claw.setPosition(CloseClawPos);
+                break;
+            case SOFT_CLOSE:
+                obot.claw.setPosition(SoftCloseClawPos);
                 break;
         }
     }

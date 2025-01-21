@@ -39,7 +39,7 @@ import java.util.ArrayList;
 
 @TeleOp
 @Disabled
-public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
+public class  AprilTagAutonomousInitDetectionExample extends LinearOpMode
 {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;

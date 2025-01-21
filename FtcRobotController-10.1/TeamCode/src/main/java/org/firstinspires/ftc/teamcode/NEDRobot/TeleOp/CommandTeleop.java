@@ -67,7 +67,7 @@ public class CommandTeleop extends CommandOpMode {
         obotV2.init(hardwareMap,telemetry);
         obotV2.read();
         obotV2.periodic();
-        obotV2.liftSubsystem.update(LiftSubsystem.LiftState.HOME);
+        obotV2.Lift.setMotionProfileTargetPosition(0);
         obotV2.intakeSubsystem.update(IntakeSubsystem.ExtendoState.HOME);
         obotV2.intakeSubsystem.update(IntakeSubsystem.IntakeState.INTAKE);
         obotV2.intakeSubsystem.update(IntakeSubsystem.PitchState.INTAKE);
@@ -87,16 +87,16 @@ public class CommandTeleop extends CommandOpMode {
                         .whenPressed(
                                 new SequentialCommandGroup(
                                         new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.CLOSE),
-                                        new WaitCommand(200),
+                                        new WaitCommand(400),
                                         new WristPosCommand(obotV2, IntakeSubsystem.WristState.HOME),
-                                        new WaitCommand(200),
+                                        new WaitCommand(100),
                                         new IntakePosCommand(obotV2, IntakeSubsystem.IntakeState.TRANSFER),
-                                        new WaitCommand(200),
+                                        new WaitCommand(100),
                                         new ParallelCommandGroup(
                                                 new PitchPosCommand(obotV2, IntakeSubsystem.PitchState.TRANSFER),
                                                 new ExtendoPosCommand(obotV2, IntakeSubsystem.ExtendoState.HOME)
                                         ),
-                                        new WaitCommand(500),
+                                        new WaitCommand(600),
                                         new TriggerPosCommand(obotV2, LiftSubsystem.TriggerState.CLOSE),
                                         new WaitCommand(300),
                                         new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.OPEN),
@@ -121,10 +121,16 @@ public class CommandTeleop extends CommandOpMode {
                 );
         GamepadEx1.getGamepadButton(GamepadKeys.Button.START)
                         .whenPressed(
-                                new ParallelCommandGroup(
-                                        new LiftPosCommand(obotV2, LiftSubsystem.LiftState.HOME),
+//                                new ParallelCommandGroup(
+//                                        new LiftPosCommand(obotV2, LiftSubsystem.LiftState.HOME),
+//                                        new TriggerPosCommand(obotV2, LiftSubsystem.TriggerState.OPEN),
+//                                        new BucketPosCommand(obotV2, LiftSubsystem.BucketState.TRANSFER)
+//                                )
+                                new SequentialCommandGroup(
+                                        new BucketPosCommand(obotV2, LiftSubsystem.BucketState.TRANSFER),
+                                        new WaitCommand(500),
                                         new TriggerPosCommand(obotV2, LiftSubsystem.TriggerState.OPEN),
-                                        new BucketPosCommand(obotV2, LiftSubsystem.BucketState.TRANSFER)
+                                        new LiftPosCommand(obotV2, LiftSubsystem.LiftState.HOME)
                                 )
                         );
 
@@ -132,9 +138,7 @@ public class CommandTeleop extends CommandOpMode {
         GamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
                 .whenPressed(
                         new SequentialCommandGroup(
-                            new TriggerPosCommand(obotV2, LiftSubsystem.TriggerState.OPEN),
-                            new WaitCommand(2000),
-                            new BucketPosCommand(obotV2, LiftSubsystem.BucketState.TRANSFER)
+                            new TriggerPosCommand(obotV2, LiftSubsystem.TriggerState.OPEN)
                         )
                 );
 
@@ -146,6 +150,7 @@ public class CommandTeleop extends CommandOpMode {
                         .whenPressed(
                                 new LiftPosCommand(obotV2, LiftSubsystem.LiftState.HIGH_BASKET)
                                 );
+
         GamepadEx1.getGamepadButton(GamepadKeys.Button.X)
                         .whenPressed(
                                 //new ParallelCommandGroup(
@@ -161,11 +166,11 @@ public class CommandTeleop extends CommandOpMode {
         GamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
                         .whenPressed(
                                 new SequentialCommandGroup(
-                                        new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.CLOSE),
+                                        new ClawPosCommand(obotV2, IntakeSubsystem.ClawState.SOFT_CLOSE),
                                         new WaitCommand(300),
                                         new IntakePosCommand(obotV2, IntakeSubsystem.IntakeState.TRANSFER),
                                         new ParallelCommandGroup(
-                                                new BucketPosCommand(obotV2, LiftSubsystem.BucketState.CLAMP),
+                                                new BucketPosCommand(obotV2, LiftSubsystem.BucketState.CLAMP_TRANSFER),
                                                 new ExtendoPosCommand(obotV2, IntakeSubsystem.ExtendoState.HOME),
                                                 new SequentialCommandGroup(
                                                         new PitchPosCommand(obotV2, IntakeSubsystem.PitchState.DEPOSIT),
@@ -208,7 +213,7 @@ public class CommandTeleop extends CommandOpMode {
         if(gamepad1.left_trigger > 0){
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
-                            new InstantCommand(() -> obotV2.claw.setPosition(0.35)),
+                            new InstantCommand(() -> obotV2.claw.setPosition(0.53)),
                             new WaitCommand(300),
                             new IntakePosCommand(obotV2, IntakeSubsystem.IntakeState.INTAKE),
                             new WaitCommand(300),

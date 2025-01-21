@@ -10,6 +10,8 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+import java.lang.reflect.Array;
+
 @Config
 public class ViziuneRED extends OpenCvPipeline {
     /*
@@ -61,12 +63,14 @@ public class ViziuneRED extends OpenCvPipeline {
     public enum ParkingPosition {
         LEFT,
         CENTER,
-        RIGHT
+        RIGHT,
+        NONE
     }
 
     // Color definitions
     private final Scalar
             YELLOW  = new Scalar(255, 255, 0),
+            RED = new Scalar(255,0,0),
             CYAN    = new Scalar(0, 255, 255),
             MAGENTA = new Scalar(255, 0, 255);
 
@@ -185,8 +189,7 @@ public class ViziuneRED extends OpenCvPipeline {
                     YELLOW,
                     -1
             );
-            };
-
+        }
 
         return input;
     }
@@ -197,12 +200,21 @@ public class ViziuneRED extends OpenCvPipeline {
             return 1;
         else if (position== ParkingPosition.CENTER)
             return 2;
-        return 3;
+        else if(position == ParkingPosition.RIGHT)
+            return 3;
+        return 4;
     }
 
-    public int getAnalysis()
-    {
+    public int getAnalysis1() {
         return avg1;
+    }
+
+    public int getAnalysis2() {
+        return avg2;
+    }
+
+    public int getAnalysis3() {
+        return avg3;
     }
 
 }

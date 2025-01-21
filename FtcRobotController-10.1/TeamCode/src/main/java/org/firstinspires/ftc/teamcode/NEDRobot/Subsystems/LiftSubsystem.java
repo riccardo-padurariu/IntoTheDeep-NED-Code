@@ -26,7 +26,8 @@ public class LiftSubsystem extends NEDSubsystem {
         TRANSFER,
         CLAMP_DEPOSIT,
         CLAMP_TRANSFER,
-        DEPOSIT_AUTO
+        DEPOSIT_AUTO,
+        PARK_AUTO
     }
 
     public enum HangState{
@@ -52,18 +53,20 @@ public class LiftSubsystem extends NEDSubsystem {
     };
     private double LIFT_MANUAL_FACTOR=10;
     private int HomeLiftPos = 0;
-    private int LowBasketLiftPos = 1400;
-    private int HighBasketLiftPos= 2900;
+    private int LowBasketLiftPos = 1200;
+    private int HighBasketLiftPos= 3000;
 
-    private double BucketTranferPos = 265;//340
-    private double BucketBasketPos = 56;
+    private double BucketTranferPos = 290;//340
+    private double BucketBasketPos = 80;
     private double BucketClampPos = 0;
-    private double BucketClampDepositPos = 265;
-    private double BucketClampTransferPos = 330;
+    private double BucketClampDepositPos = 260;
+    private double BucketClampTransferPos = 100;
+    private double BucketParkPos = 230;
+    private double BucketAutoPos = 100;
 
-    private double OpenTriggerPos =0.5;
-    private double CloseTriggerPos = 0.87;
-    private double CloseDepositPos = 0.8;
+    private double OpenTriggerPos =0.2;
+    private double CloseTriggerPos = 0.01;
+    private double CloseDepositPos = 0.03;
 
     private double HangHomePos = 0;
     private double HangSwitchPos = 0;
@@ -118,6 +121,14 @@ public class LiftSubsystem extends NEDSubsystem {
             case CLAMP_TRANSFER:
                 obot.leftBucket.setPosition(BucketClampTransferPos/360);
                 obot.rightBucket.setPosition(BucketClampTransferPos/360);
+                break;
+            case PARK_AUTO:
+                obot.leftBucket.setPosition(BucketParkPos/360);
+                obot.rightBucket.setPosition(BucketParkPos  /360);
+                break;
+            case DEPOSIT_AUTO:
+                obot.leftBucket.setPosition(BucketAutoPos/360);
+                obot.rightBucket.setPosition(BucketAutoPos  /360);
                 break;
         }
     }
